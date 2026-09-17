@@ -5,7 +5,8 @@ let package = Package(
     name: "BOUIKit",
     platforms: [
         .iOS(.v13),
-        .macCatalyst(.v13)
+        .macCatalyst(.v13),
+        .macOS(.v12)
     ],
     products: [
         .library(name: "BOUIKit", targets: ["BOUIKit"])

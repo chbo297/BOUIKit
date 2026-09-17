@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import ObjectiveC.runtime
 import UIKit
 
@@ -234,3 +235,4 @@ private extension UIEdgeInsets {
         )
     }
 }
+#endif
