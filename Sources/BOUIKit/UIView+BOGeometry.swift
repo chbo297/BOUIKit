@@ -107,10 +107,20 @@ public extension UIScrollView {
         return max(minimum, contentSize.width + adjustedContentInset.right - bounds.width)
     }
 
-    /// 是否已经滚到底。已在底部时不必再调 `setContentOffset` / `scrollToRow`：
-    /// 那会打断在飞的减速动画，也会白跑一次布局。
+    /// 是否已经滚到底 —— 严格口径：**连 `contentInset.bottom` 让出的那段空白也滑出来了**。
+    ///
+    /// 有 bottom inset 时这比「内容底部露出来」更靠后（差一个 `inset.bottom`）。
+    /// 想判断「用户看到的内容已经到底」请用 `bo_isContentBottomVisible`。
     func bo_isScrolledToBottom(tolerance: CGFloat = boGeometryDefaultTolerance) -> Bool {
         contentOffset.y >= bo_maximumContentOffsetY - tolerance
+    }
+
+    /// 内容底边是否已经进入可见区（忽略 `contentInset.bottom` 让出的空白）。
+    ///
+    /// 这是「看起来贴底了」的口径：贴底之后把 `contentInset.bottom` 调大、或把视口改矮，
+    /// `contentOffset` 并不会跟着走，此时 `bo_isScrolledToBottom` 会变 false 而这里仍是 true。
+    func bo_isContentBottomVisible(tolerance: CGFloat = boGeometryDefaultTolerance) -> Bool {
+        contentOffset.y + bounds.height >= contentSize.height - tolerance
     }
 
     /// 是否已经滚到顶。

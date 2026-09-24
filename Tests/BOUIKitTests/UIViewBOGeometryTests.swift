@@ -67,6 +67,40 @@ final class UIViewBOGeometryTests: XCTestCase {
         XCTAssertEqual(scrollView.contentOffset.y, 120)
         XCTAssertFalse(scrollView.bo_setContentOffset(CGPoint(x: 0, y: 120.3)))
     }
+
+    func testContentBottomVisibleIgnoresBottomInset() {
+        let scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        scrollView.contentSize = CGSize(width: 100, height: 300)
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 120, right: 0)
+
+        // 内容底边刚好对齐可见区底边：严格口径还差一个 bottom inset，宽松口径已经到底。
+        scrollView.contentOffset = CGPoint(x: 0, y: 200)
+        XCTAssertFalse(scrollView.bo_isScrolledToBottom())
+        XCTAssertTrue(scrollView.bo_isContentBottomVisible())
+
+        // 继续把 inset 空白也滑出来，两个口径都成立。
+        scrollView.contentOffset = CGPoint(x: 0, y: scrollView.bo_maximumContentOffsetY)
+        XCTAssertTrue(scrollView.bo_isScrolledToBottom())
+        XCTAssertTrue(scrollView.bo_isContentBottomVisible())
+
+        // 还差一屏时两个口径都不成立。
+        scrollView.contentOffset = CGPoint(x: 0, y: 50)
+        XCTAssertFalse(scrollView.bo_isScrolledToBottom())
+        XCTAssertFalse(scrollView.bo_isContentBottomVisible())
+    }
+
+    func testContentBottomVisibleStaysTrueAfterBottomInsetGrows() {
+        let scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        scrollView.contentSize = CGSize(width: 100, height: 300)
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
+        scrollView.contentOffset = CGPoint(x: 0, y: scrollView.bo_maximumContentOffsetY)
+        XCTAssertTrue(scrollView.bo_isScrolledToBottom())
+
+        // 贴底之后把 bottom inset 调大：contentOffset 不会自己跟着走。
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
+        XCTAssertFalse(scrollView.bo_isScrolledToBottom(), "严格口径此时会认为没到底")
+        XCTAssertTrue(scrollView.bo_isContentBottomVisible(), "内容底边仍在可见区内")
+    }
 }
 
 #endif
