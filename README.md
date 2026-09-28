@@ -9,7 +9,7 @@ UIKit 基础能力集合，不依赖任何业务类型、常量或资源。公�
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/chbo297/BOUIKit.git", from: "0.2.0")
+    .package(url: "https://github.com/chbo297/BOUIKit.git", from: "0.3.0")
 ]
 ```
 
